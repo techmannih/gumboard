@@ -85,14 +85,26 @@ export default function PublicBoardPage({ params }: { params: Promise<{ id: stri
     const paddingHeight = actualNotePadding * 2;
     const minContentHeight = 84;
 
-    // All notes now use checklist items
-    const itemHeight = 32;
+    const baseItemHeight = 32; // Minimum height for a single-line item
+    const lineHeight = 20; // Approximate line height for additional lines
     const itemSpacing = 8;
-    const checklistItemsCount = note.checklistItems?.length || 0;
 
-    const checklistHeight =
-      checklistItemsCount * itemHeight +
-      (checklistItemsCount > 0 ? (checklistItemsCount - 1) * itemSpacing : 0);
+    const availableWidth = (noteWidth || config.noteWidth) - actualNotePadding * 2 - 40; // Approximate space for text
+    const charsPerLine = Math.max(1, Math.floor(availableWidth / 7));
+
+    let checklistHeight = 0;
+    note.checklistItems?.forEach((item) => {
+      const lines = item.content
+        .split("\n")
+        .map((line) => Math.max(1, Math.ceil(line.length / charsPerLine)))
+        .reduce((a, b) => a + b, 0);
+      checklistHeight += baseItemHeight + (lines - 1) * lineHeight;
+    });
+
+    if (note.checklistItems && note.checklistItems.length > 0) {
+      checklistHeight += (note.checklistItems.length - 1) * itemSpacing;
+    }
+
     const totalChecklistHeight = Math.max(minContentHeight, checklistHeight);
 
     return headerHeight + paddingHeight + totalChecklistHeight + 40;

@@ -213,17 +213,31 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
     const paddingHeight = actualNotePadding * 2; // Top and bottom padding
     const minContentHeight = 60; // Minimum content area
 
-    // All notes now use checklist items - calculate height based on number of items
-    const itemHeight = 32; // Use 32px for textarea-based items (slightly larger than main's 28px)
+    // Estimate height of checklist items based on content length
+    const baseItemHeight = 32; // Minimum height for a single-line item
+    const lineHeight = 20; // Approximate line height for additional lines
     const itemSpacing = 4; // Space between items (space-y-1 = 4px)
-    const checklistItemsCount = note.checklistItems?.length || 0;
-    const addingItemHeight = addingChecklistItem === note.id ? 32 : 0; // Add height for input field
     const addTaskButtonHeight = 36; // Height for the "Add task" button including margin
 
-    const checklistHeight =
-      checklistItemsCount * itemHeight +
-      (checklistItemsCount > 0 ? (checklistItemsCount - 1) * itemSpacing : 0) +
-      addingItemHeight;
+    const availableWidth = (noteWidth || config.noteWidth) - actualNotePadding * 2 - 40; // Approximate space for text
+    const charsPerLine = Math.max(1, Math.floor(availableWidth / 7));
+
+    let checklistHeight = 0;
+    note.checklistItems?.forEach((item) => {
+      const lines = item.content
+        .split("\n")
+        .map((line) => Math.max(1, Math.ceil(line.length / charsPerLine)))
+        .reduce((a, b) => a + b, 0);
+      checklistHeight += baseItemHeight + (lines - 1) * lineHeight;
+    });
+
+    if (note.checklistItems && note.checklistItems.length > 0) {
+      checklistHeight += (note.checklistItems.length - 1) * itemSpacing;
+    }
+    if (addingChecklistItem === note.id) {
+      checklistHeight += baseItemHeight;
+    }
+
     const totalChecklistHeight = Math.max(minContentHeight, checklistHeight);
 
     return headerHeight + paddingHeight + totalChecklistHeight + addTaskButtonHeight;
