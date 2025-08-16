@@ -1,10 +1,29 @@
 import { auth } from "@/auth";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
+import { Loader2 } from "lucide-react";
+import { useFormStatus } from "react-dom";
+
+function SaveButton() {
+  "use client";
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" className="w-full" disabled={pending}>
+      {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+      {pending ? "Saving..." : "Save"}
+    </Button>
+  );
+}
 
 async function updateUserName(formData: FormData) {
   "use server";
@@ -101,9 +120,7 @@ export default async function ProfileSetup() {
                   />
                 </div>
 
-                <Button type="submit" className="w-full">
-                  Save
-                </Button>
+                <SaveButton />
               </form>
             </CardContent>
           </Card>

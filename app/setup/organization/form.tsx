@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { X, Plus } from "lucide-react";
+import { X, Plus, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/contexts/UserContext";
 
@@ -114,7 +114,8 @@ export default function OrganizationSetupForm({ onSubmit }: OrganizationSetupFor
       </div>
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Creating..." : hasValidEmails() ? "Save & Send Invites" : "Save"}
+        {isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+        {isSubmitting ? "Saving..." : hasValidEmails() ? "Save & Send Invites" : "Save"}
       </Button>
     </form>
   );
