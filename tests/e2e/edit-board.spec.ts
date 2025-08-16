@@ -17,6 +17,7 @@ test.describe("Edit Board", () => {
 
     await authenticatedPage.goto("/dashboard");
 
+    await authenticatedPage.locator(`[data-board-id="${board.id}"]`).hover();
     await authenticatedPage.click(`[data-board-id="${board.id}"] [aria-label="Edit board"]`);
 
     const newName = testContext.getBoardName("Updated Board");
