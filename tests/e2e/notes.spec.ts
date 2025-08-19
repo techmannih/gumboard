@@ -513,8 +513,12 @@ test.describe("Note Management", () => {
 
       await authenticatedPage.goto(`/boards/${board.id}`);
 
-      const sourceElement = authenticatedPage.getByTestId(itemA3Id);
-      const targetElement = authenticatedPage.getByTestId(itemA1Id);
+      const sourceElement = authenticatedPage
+        .getByText(testContext.prefix("Item A3"))
+        .locator("..");
+      const targetElement = authenticatedPage
+        .getByText(testContext.prefix("Item A1"))
+        .locator("..");
 
       await expect(sourceElement).toBeVisible();
       await expect(targetElement).toBeVisible();

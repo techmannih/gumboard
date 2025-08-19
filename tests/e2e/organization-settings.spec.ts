@@ -24,9 +24,10 @@ test.describe("Organization Settings", () => {
     });
 
     await authenticatedPage.goto("/settings/organization");
-
-    // Wait for page to load
-    await expect(authenticatedPage.locator("text=Organization Settings")).toBeVisible();
+    await authenticatedPage.waitForLoadState("networkidle");
+    await expect(
+      authenticatedPage.getByRole("heading", { name: "Organization Settings" })
+    ).toBeVisible();
 
     // Test invalid Slack webhook URL (doesn't contain "slack")
     const slackWebhookInput = authenticatedPage.locator("#slackWebhookUrl");
@@ -67,9 +68,10 @@ test.describe("Organization Settings", () => {
     });
 
     await authenticatedPage.goto("/settings/organization");
-
-    // Wait for page to load
-    await expect(authenticatedPage.locator("text=Organization Settings")).toBeVisible();
+    await authenticatedPage.waitForLoadState("networkidle");
+    await expect(
+      authenticatedPage.getByRole("heading", { name: "Organization Settings" })
+    ).toBeVisible();
 
     // Test valid Slack webhook URL (contains "slack")
     const validSlackUrl =
@@ -115,9 +117,10 @@ test.describe("Organization Settings", () => {
     });
 
     await authenticatedPage.goto("/settings/organization");
-
-    // Wait for page to load
-    await expect(authenticatedPage.locator("text=Organization Settings")).toBeVisible();
+    await authenticatedPage.waitForLoadState("networkidle");
+    await expect(
+      authenticatedPage.getByRole("heading", { name: "Organization Settings" })
+    ).toBeVisible();
 
     // Verify existing URL is loaded
     const slackWebhookInput = authenticatedPage.locator("#slackWebhookUrl");
@@ -166,9 +169,10 @@ test.describe("Organization Settings", () => {
     });
 
     await authenticatedPage.goto("/settings/organization");
-
-    // Wait for page to load
-    await expect(authenticatedPage.locator("text=Organization Settings")).toBeVisible();
+    await authenticatedPage.waitForLoadState("networkidle");
+    await expect(
+      authenticatedPage.getByRole("heading", { name: "Organization Settings" })
+    ).toBeVisible();
 
     // Verify Slack webhook input is disabled for non-admin users
     const slackWebhookInput = authenticatedPage.locator("#slackWebhookUrl");

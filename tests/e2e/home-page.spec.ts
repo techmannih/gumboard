@@ -162,7 +162,9 @@ test.describe("Home Page", () => {
     const originalFinanceText = testContext.prefix("Finance update by Friday");
     const updatedFinanceText = testContext.prefix("Updated Finance deadline");
     await authenticatedPage.getByText(originalFinanceText).click();
-    const editInput = authenticatedPage.locator("textarea").first();
+    const editInput = authenticatedPage
+      .getByTestId(testContext.prefix("101"))
+      .locator("textarea");
     await expect(editInput).toBeVisible();
     const editResponse = authenticatedPage.waitForResponse(
       (resp) =>
