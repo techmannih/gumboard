@@ -41,6 +41,8 @@ import {
 } from "@/components/ui/form";
 import { ProfileDropdown } from "@/components/profile-dropdown";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatDistanceToNow } from "date-fns";
+import { cn } from "@/lib/utils";
 
 // Dashboard-specific extended types
 export type DashboardBoard = Board & {
@@ -48,6 +50,7 @@ export type DashboardBoard = Board & {
   createdAt: string;
   updatedAt: string;
   isPublic: boolean;
+  lastActivity: string;
   _count: { notes: number };
 };
 
@@ -326,13 +329,21 @@ export default function Dashboard() {
                         </span>
                       </div>
                     </CardHeader>
-                    {board.description && (
-                      <CardContent>
+                    <CardContent>
+                      {board.description && (
                         <p className="text-slate-600 dark:text-zinc-300 truncate">
                           {board.description}
                         </p>
-                      </CardContent>
-                    )}
+                      )}
+                      <p
+                        className={cn(
+                          "text-xs text-muted-foreground dark:text-zinc-400",
+                          board.description ? "mt-2" : ""
+                        )}
+                      >
+                        Last activity {formatDistanceToNow(new Date(board.lastActivity), { addSuffix: true })}
+                      </p>
+                    </CardContent>
                   </Card>
                 </Link>
               ))}
@@ -421,6 +432,7 @@ const DashboardSkeleton = () => {
               <div>
                 <Skeleton className="h-8 w-32 mb-8" />
                 <Skeleton className="h-6 w-64" />
+                <Skeleton className="h-4 w-48 mt-2" />
               </div>
             </div>
           ))}

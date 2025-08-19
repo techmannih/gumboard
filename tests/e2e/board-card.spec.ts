@@ -75,5 +75,8 @@ test.describe("Board Card", () => {
     // go to card header then search for span that contain notes count
     const noteCount = newBoardCard.locator("span");
     await expect(noteCount).toHaveText(/^\d+ note(s)?$/);
+
+    // ensure last activity text is visible
+    await expect(newBoardCard.locator("text=Last activity")).toBeVisible();
   });
 });

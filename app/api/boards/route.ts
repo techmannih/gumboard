@@ -32,6 +32,16 @@ export async function GET() {
         createdBy: true,
         createdAt: true,
         updatedAt: true,
+        // Fetch latest note to determine last activity
+        notes: {
+          select: { updatedAt: true },
+          where: {
+            deletedAt: null,
+            archivedAt: null,
+          },
+          orderBy: { updatedAt: "desc" },
+          take: 1,
+        },
         _count: {
           select: {
             notes: {
@@ -46,7 +56,13 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json({ boards });
+    const boardsWithActivity = boards.map((board) => {
+      const lastActivity = board.notes[0]?.updatedAt ?? board.updatedAt;
+      const { notes, ...rest } = board;
+      return { ...rest, lastActivity };
+    });
+
+    return NextResponse.json({ boards: boardsWithActivity });
   } catch (error) {
     console.error("Error fetching boards:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
