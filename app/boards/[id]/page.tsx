@@ -157,6 +157,80 @@ export default function BoardPage() {
     setSelectedAuthor(urlAuthor);
   };
 
+  const fetchBoardData = useCallback(async () => {
+    try {
+      // Fetch all boards for the dropdown
+      let allBoardsResponse: Response;
+      let notesResponse: Response | undefined;
+      let boardResponse: Response | undefined;
+
+      if (boardId === "all-notes") {
+        // For all notes view, create a virtual board object and fetch all notes
+        [allBoardsResponse, notesResponse] = await Promise.all([
+          fetch("/api/boards"),
+          fetch(`/api/boards/all-notes/notes`),
+        ]);
+
+        setBoard({
+          id: "all-notes",
+          name: "All notes",
+          description: "Notes from all boards",
+        });
+      } else if (boardId === "archive") {
+        [allBoardsResponse, notesResponse] = await Promise.all([
+          fetch("/api/boards"),
+          fetch(`/api/boards/archive/notes`),
+        ]);
+
+        // Set virtual board immediately
+        setBoard({
+          id: "archive",
+          name: "Archive",
+          description: "Archived notes from all boards",
+        });
+      } else {
+        [allBoardsResponse, boardResponse, notesResponse] = await Promise.all([
+          fetch("/api/boards"),
+          fetch(`/api/boards/${boardId}`),
+          fetch(`/api/boards/${boardId}/notes`),
+        ]);
+      }
+
+      if (allBoardsResponse.ok) {
+        const { boards } = await allBoardsResponse.json();
+        setAllBoards(boards);
+      }
+
+      if (boardResponse && boardResponse.ok) {
+        const { board } = await boardResponse.json();
+        setBoard(board);
+        setBoardSettings({
+          name: board.name,
+          description: board.description || "",
+          isPublic: (board as { isPublic?: boolean })?.isPublic ?? false,
+          sendSlackUpdates: (board as { sendSlackUpdates?: boolean })?.sendSlackUpdates ?? true,
+        });
+      }
+
+      if (notesResponse && notesResponse.ok) {
+        const { notes } = await notesResponse.json();
+        setNotes(notes);
+      }
+
+      if (boardId && boardId !== "all-notes") {
+        try {
+          localStorage.setItem("gumboard-last-visited-board", boardId);
+        } catch (error) {
+          console.warn("Failed to save last visited board:", error);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching board data:", error);
+    } finally {
+      setNotesLoading(false);
+    }
+  }, [boardId]);
+
   // Initialize filters from URL on mount
   useEffect(() => {
     initializeFiltersFromURL();
@@ -167,8 +241,7 @@ export default function BoardPage() {
     if (boardId) {
       fetchBoardData();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boardId]);
+  }, [boardId, fetchBoardData]);
 
   // Close dropdowns when clicking outside and handle escape key
   useEffect(() => {
@@ -273,80 +346,6 @@ export default function BoardPage() {
     const calculatedHeight = Math.max(minHeight, maxBottom + 100);
     return `${calculatedHeight}px`;
   }, [layoutNotes]);
-
-  const fetchBoardData = async () => {
-    try {
-      // Fetch all boards for the dropdown
-      let allBoardsResponse: Response;
-      let notesResponse: Response | undefined;
-      let boardResponse: Response | undefined;
-
-      if (boardId === "all-notes") {
-        // For all notes view, create a virtual board object and fetch all notes
-        [allBoardsResponse, notesResponse] = await Promise.all([
-          fetch("/api/boards"),
-          fetch(`/api/boards/all-notes/notes`),
-        ]);
-
-        setBoard({
-          id: "all-notes",
-          name: "All notes",
-          description: "Notes from all boards",
-        });
-      } else if (boardId === "archive") {
-        [allBoardsResponse, notesResponse] = await Promise.all([
-          fetch("/api/boards"),
-          fetch(`/api/boards/archive/notes`),
-        ]);
-
-        // Set virtual board immediately
-        setBoard({
-          id: "archive",
-          name: "Archive",
-          description: "Archived notes from all boards",
-        });
-      } else {
-        [allBoardsResponse, boardResponse, notesResponse] = await Promise.all([
-          fetch("/api/boards"),
-          fetch(`/api/boards/${boardId}`),
-          fetch(`/api/boards/${boardId}/notes`),
-        ]);
-      }
-
-      if (allBoardsResponse.ok) {
-        const { boards } = await allBoardsResponse.json();
-        setAllBoards(boards);
-      }
-
-      if (boardResponse && boardResponse.ok) {
-        const { board } = await boardResponse.json();
-        setBoard(board);
-        setBoardSettings({
-          name: board.name,
-          description: board.description || "",
-          isPublic: (board as { isPublic?: boolean })?.isPublic ?? false,
-          sendSlackUpdates: (board as { sendSlackUpdates?: boolean })?.sendSlackUpdates ?? true,
-        });
-      }
-
-      if (notesResponse && notesResponse.ok) {
-        const { notes } = await notesResponse.json();
-        setNotes(notes);
-      }
-
-      if (boardId && boardId !== "all-notes") {
-        try {
-          localStorage.setItem("gumboard-last-visited-board", boardId);
-        } catch (error) {
-          console.warn("Failed to save last visited board:", error);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching board data:", error);
-    } finally {
-      setNotesLoading(false);
-    }
-  };
 
   // Adapter: bridge component Note -> existing update handler
   const handleUpdateNoteFromComponent = async (updatedNote: Note) => {
