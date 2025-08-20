@@ -467,8 +467,8 @@ export function Note({
         </div>
       </div>
 
-      <div className="flex flex-col flex-1 min-h-0">
-        <div className="flex-1 overflow-y-auto space-y-1" data-testid="checklist-container">
+      <div className="flex flex-col">
+        <div className="space-y-1" data-testid="checklist-container">
           {/* Checklist Items */}
           <DraggableRoot
             items={note.checklistItems ?? []}

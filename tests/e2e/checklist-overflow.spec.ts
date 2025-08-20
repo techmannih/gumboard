@@ -55,6 +55,7 @@ test.describe("Checklist overflow containment", () => {
     }));
 
     expect(card.scrollHeight).toBe(card.clientHeight);
-    expect(container.scrollHeight).toBeGreaterThan(container.clientHeight);
+    expect(container.scrollHeight).toBe(container.clientHeight);
+    expect(card.clientHeight).toBeGreaterThan(1000);
   });
 });
