@@ -38,13 +38,18 @@ test.describe("Note Management", () => {
     await initialTextarea.fill(testItemContent);
 
     // Use Tab key to move focus away and trigger blur
+    const addItemResponse = authenticatedPage.waitForResponse(
+      (resp) =>
+        resp.url().includes(`/api/boards/${board.id}/notes/`) &&
+        resp.request().method() === "PUT" &&
+        resp.ok()
+    );
+
     await initialTextarea.press("Tab");
+    await addItemResponse;
 
     // Wait for the content to appear in the UI (this means at least one submission worked)
     await expect(authenticatedPage.getByText(testItemContent)).toBeVisible();
-
-    // Add a small delay to ensure all async operations complete
-    await authenticatedPage.waitForTimeout(1000);
 
     const notes = await testPrisma.note.findMany({
       where: {
