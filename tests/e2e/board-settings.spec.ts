@@ -222,6 +222,35 @@ test.describe("Board Settings", () => {
     await expect(page.locator("text=No notes found")).toBeVisible();
   });
 
+  test("should display responsive text for Delete Board button", async ({
+    authenticatedPage,
+    testPrisma,
+    testContext,
+  }) => {
+    const board = await testPrisma.board.create({
+      data: {
+        name: testContext.getBoardName("Delete Board Button"),
+        description: testContext.prefix("Board for delete button test"),
+        sendSlackUpdates: false,
+        createdBy: testContext.userId,
+        organizationId: testContext.organizationId,
+      },
+    });
+
+    await authenticatedPage.goto(`/boards/${board.id}`);
+    await authenticatedPage.getByRole("button", { name: "Board settings" }).click();
+
+    await expect(
+      authenticatedPage.getByRole("button", { name: "Delete Board" })
+    ).toBeVisible();
+
+    await authenticatedPage.setViewportSize({ width: 375, height: 667 });
+
+    await expect(
+      authenticatedPage.getByRole("button", { name: /^Delete$/ })
+    ).toBeVisible();
+  });
+
   test("shows not found for private board on public route", async ({
     authenticatedPage,
     testPrisma,
