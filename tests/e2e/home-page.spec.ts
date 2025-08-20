@@ -327,12 +327,16 @@ test.describe("Home Page", () => {
       "1"
     );
 
-    // Verify reorder was saved to database
-    const reorderedItems = await testPrisma.checklistItem.findMany({
-      where: { noteId: note2.id },
-      orderBy: { order: "asc" },
+    // Verify reorder was saved to database (allow time for async persistence)
+    await expect
+      .poll(async () =>
+        (
+          await testPrisma.checklistItem.findMany({
+            where: { noteId: note2.id },
+            orderBy: { order: "asc" },
+          })
+        ).map((item) => item.content),
+      )
+      .toEqual([targetElementText, sourceElementText]);
     });
-    expect(reorderedItems[0].content).toBe(targetElementText);
-    expect(reorderedItems[1].content).toBe(sourceElementText);
   });
-});
