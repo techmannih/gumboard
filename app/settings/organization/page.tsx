@@ -647,12 +647,12 @@ export default function OrganizationSettingsPage() {
               className="disabled:bg-gray-400 disabled:cursor-not-allowed bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white dark:text-zinc-100"
               title={!user?.isAdmin ? "Only admins can invite new team members" : undefined}
             >
-              <UserPlus className="w-4 h-4 mr-2" />
+              <UserPlus className="w-4 h-4 mr-1" />
               {inviting ? (
                 "Inviting..."
               ) : (
                 <>
-                  <span className="hidden lg:inline">Send</span>Invite
+                  <span className="hidden lg:inline">Send&nbsp;</span>Invite
                 </>
               )}
             </Button>

@@ -184,4 +184,21 @@ test.describe("Organization Settings", () => {
       "Only admins can update organization settings"
     );
   });
+
+  test("should display responsive text for Send Invite button", async ({ authenticatedPage }) => {
+    await authenticatedPage.goto("/settings/organization");
+
+    // Desktop view shows "Send Invite"
+    await expect(
+      authenticatedPage.getByRole("button", { name: "Send Invite" })
+    ).toBeVisible();
+
+    // Switch to mobile viewport
+    await authenticatedPage.setViewportSize({ width: 375, height: 667 });
+
+    // Mobile view shows "Invite" only
+    await expect(
+      authenticatedPage.getByRole("button", { name: "Invite" })
+    ).toBeVisible();
+  });
 });
