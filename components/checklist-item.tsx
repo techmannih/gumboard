@@ -27,7 +27,7 @@ interface ChecklistItemProps {
   showDeleteButton?: boolean;
   className?: string;
   isNewItem?: boolean;
-  onCreateItem?: (content: string) => void;
+  onCreateItem?: (content: string) => void | Promise<void>;
 }
 
 export function ChecklistItem({

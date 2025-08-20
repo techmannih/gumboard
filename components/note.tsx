@@ -327,9 +327,9 @@ export function Note({
     handleStopEditItem();
   };
 
-  const handleCreateNewItem = (content: string) => {
+  const handleCreateNewItem = async (content: string) => {
     if (content.trim()) {
-      handleAddChecklistItem(content.trim());
+      await handleAddChecklistItem(content.trim());
       setNewItemContent("");
     }
   };
