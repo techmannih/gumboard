@@ -216,6 +216,10 @@ test.describe("Board Settings", () => {
     });
 
     await page.goto(`/public/boards/${board.id}`);
+    await page.waitForResponse(
+      (resp) =>
+        resp.url().includes(`/api/boards/${board.id}`) && resp.ok()
+    );
 
     await expect(page.locator(`text=${board.name}`)).toBeVisible();
     await expect(page.locator("text=Public").first()).toBeVisible();
@@ -239,6 +243,9 @@ test.describe("Board Settings", () => {
     });
 
     await authenticatedPage.goto(`/public/boards/${board.id}`);
+    await authenticatedPage.waitForResponse(
+      (resp) => resp.url().includes(`/api/boards/${board.id}`)
+    );
 
     await expect(authenticatedPage.locator("text=Board not found")).toBeVisible();
     await expect(

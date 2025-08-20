@@ -59,6 +59,10 @@ test.describe("Board Name Link Functionality", () => {
     });
 
     await authenticatedPage.goto("/boards/all-notes");
+    await authenticatedPage.waitForResponse(
+      (resp) =>
+        resp.url().includes("/api/boards/all-notes/notes") && resp.ok()
+    );
 
     await expect(
       authenticatedPage.locator(`text=${testContext.prefix("Note from Board 1")}`)

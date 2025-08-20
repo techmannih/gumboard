@@ -298,21 +298,13 @@ test.describe("Home Page", () => {
 
     await expect(sourceElement).toBeVisible();
 
-    const targetBox = await targetElement.boundingBox();
-    if (!targetBox) throw Error("Target element not found");
-
     const reorderResponse = authenticatedPage.waitForResponse(
       (resp) =>
         resp.url().includes(`/api/boards/${demoBoard.id}/notes/`) &&
         resp.request().method() === "PUT" &&
         resp.ok()
     );
-    await sourceElement.hover();
-    await authenticatedPage.mouse.down();
-    await targetElement.hover();
-    await targetElement.hover();
-    await authenticatedPage.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + 5);
-    await authenticatedPage.mouse.up();
+    await sourceElement.dragTo(targetElement);
     await reorderResponse;
 
     await expect(authenticatedPage.getByTestId(targetTestId)).toHaveAttribute(

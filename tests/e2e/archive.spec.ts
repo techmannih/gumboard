@@ -180,8 +180,11 @@ test.describe("Archive Functionality", () => {
       },
     });
 
-    // Go to archive page
+    // Go to archive page and wait for notes to load
     await authenticatedPage.goto("/boards/archive");
+    await authenticatedPage.waitForResponse(
+      (resp) => resp.url().includes("/api/boards/archive/notes") && resp.ok()
+    );
 
     // Scope to the note text to avoid picking up another note
     const noteLocator = authenticatedPage.getByText(
