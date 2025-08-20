@@ -67,11 +67,11 @@ export function ChecklistItem({
       adjustTextareaHeight(textareaRef.current);
     }
   }, [item.content, isEditing]);
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (isNewItem && editContent?.trim() && onCreateItem) {
-        onCreateItem(editContent.trim());
+        await onCreateItem(editContent.trim());
       } else {
         const target = e.target as HTMLTextAreaElement;
         target.blur();
@@ -90,13 +90,13 @@ export function ChecklistItem({
     }
   };
 
-  const handleBlur = () => {
+  const handleBlur = async () => {
     if (deletingRef.current) {
       deletingRef.current = false;
       return;
     }
     if (isNewItem && editContent?.trim() && onCreateItem) {
-      onCreateItem(editContent.trim());
+      await onCreateItem(editContent.trim());
     } else if (isEditing && editContent !== undefined && onEdit) {
       onEdit(item.id, editContent);
     }

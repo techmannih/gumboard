@@ -199,10 +199,13 @@ test.describe("Home Page", () => {
     await expect(authenticatedPage.getByTestId(testContext.prefix("101"))).not.toBeAttached();
 
     // Verify item was deleted from database
-    const deletedItem = await testPrisma.checklistItem.findFirst({
-      where: { id: testContext.prefix("101") },
-    });
-    expect(deletedItem).toBeNull();
+    await expect
+      .poll(async () =>
+        testPrisma.checklistItem.findFirst({
+          where: { id: testContext.prefix("101") },
+        })
+      )
+      .toBeNull();
 
     // Test 6: Delete entire note
     const deleteNoteButton = authenticatedPage.getByRole("button", {

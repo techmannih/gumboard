@@ -328,9 +328,10 @@ export function Note({
   };
 
   const handleCreateNewItem = async (content: string) => {
-    if (content.trim()) {
-      await handleAddChecklistItem(content.trim());
+    const trimmed = content.trim();
+    if (trimmed) {
       setNewItemContent("");
+      await handleAddChecklistItem(trimmed);
     }
   };
 
