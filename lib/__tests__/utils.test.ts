@@ -1,4 +1,4 @@
-import { cn } from "../utils";
+import { cn, getBoardId } from "../utils";
 
 describe("cn utility function", () => {
   it("should combine class names correctly", () => {
@@ -24,5 +24,19 @@ describe("cn utility function", () => {
   it("should handle undefined and null values", () => {
     const result = cn("base", undefined, null, "end");
     expect(result).toBe("base end");
+  });
+});
+
+describe("getBoardId", () => {
+  it("returns string when id is string", () => {
+    expect(getBoardId("abc")).toBe("abc");
+  });
+
+  it("returns first element when id is array", () => {
+    expect(getBoardId(["first", "second"])).toBe("first");
+  });
+
+  it("returns null when id is undefined", () => {
+    expect(getBoardId(undefined)).toBeNull();
   });
 });

@@ -21,6 +21,11 @@ export function getBaseUrl(requestOrHeaders?: Request | Headers): string {
   return process.env.AUTH_URL || "http://localhost:3000";
 }
 
+export function getBoardId(id: string | string[] | undefined): string | null {
+  if (!id) return null;
+  return Array.isArray(id) ? id[0] : id;
+}
+
 export function getResponsiveConfig() {
   if (typeof window === "undefined") {
     return { noteWidth: 320, gridGap: 20, containerPadding: 20, notePadding: 16 };
