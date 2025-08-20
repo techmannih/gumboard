@@ -1,7 +1,11 @@
 import { test, expect } from "../fixtures/test-helpers";
 
-test.describe("Checklist text overflow", () => {
-  test("long checklist items should stay within the note card", async ({ authenticatedPage, testContext, testPrisma }) => {
+test.describe("Checklist overflow containment", () => {
+  test("long checklist items remain inside the note card", async ({
+    authenticatedPage,
+    testContext,
+    testPrisma,
+  }) => {
     const boardName = testContext.getBoardName("Overflow Board");
     const board = await testPrisma.board.create({
       data: {
@@ -20,7 +24,7 @@ test.describe("Checklist text overflow", () => {
       },
     });
 
-    const longContent = "x".repeat(200);
+    const longContent = "Line\n".repeat(200);
     const itemId = testContext.prefix("item-overflow");
 
     await testPrisma.checklistItem.create({
@@ -35,16 +39,22 @@ test.describe("Checklist text overflow", () => {
 
     await authenticatedPage.goto(`/boards/${board.id}`);
 
-    const checklistTextarea = authenticatedPage
-      .getByTestId(itemId)
-      .locator("textarea");
+    const noteCard = authenticatedPage.getByTestId("note-card");
+    const checklistContainer = noteCard.getByTestId("checklist-container");
 
-    await expect(checklistTextarea).toBeVisible();
+    await expect(checklistContainer).toBeVisible();
 
-    const hasOverflow = await checklistTextarea.evaluate(
-      (el) => el.scrollWidth > el.clientWidth
-    );
+    const card = await noteCard.evaluate((el) => ({
+      scrollHeight: el.scrollHeight,
+      clientHeight: el.clientHeight,
+    }));
 
-    expect(hasOverflow).toBe(false);
+    const container = await checklistContainer.evaluate((el) => ({
+      scrollHeight: el.scrollHeight,
+      clientHeight: el.clientHeight,
+    }));
+
+    expect(card.scrollHeight).toBe(card.clientHeight);
+    expect(container.scrollHeight).toBeGreaterThan(container.clientHeight);
   });
 });
