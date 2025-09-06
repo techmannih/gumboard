@@ -28,6 +28,7 @@ interface ChecklistItemProps {
   className?: string;
   isNewItem?: boolean;
   onCreateItem?: (content: string) => void;
+  autoFocus?: boolean;
 }
 
 export function ChecklistItem({
@@ -45,6 +46,7 @@ export function ChecklistItem({
   className,
   isNewItem = false,
   onCreateItem,
+  autoFocus = false,
 }: ChecklistItemProps) {
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
   const previousContentRef = React.useRef<string>("");
@@ -67,6 +69,13 @@ export function ChecklistItem({
       adjustTextareaHeight(textareaRef.current);
     }
   }, [item.content, isEditing]);
+
+  React.useEffect(() => {
+    if (isEditing && textareaRef.current && autoFocus) {
+      textareaRef.current.focus();
+      textareaRef.current.select();
+    }
+  }, [isEditing, autoFocus]);
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();

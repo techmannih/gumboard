@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -87,6 +87,20 @@ export function Note({
   const [editingItem, setEditingItem] = useState<string | null>(null);
   const [editingItemContent, setEditingItemContent] = useState("");
   const [newItemContent, setNewItemContent] = useState("");
+  const [autoFocusItemId, setAutoFocusItemId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (
+      !autoFocusItemId &&
+      note.checklistItems?.length === 1 &&
+      note.checklistItems[0].content === "New to-do"
+    ) {
+      const firstItem = note.checklistItems[0];
+      setEditingItem(firstItem.id);
+      setEditingItemContent(firstItem.content);
+      setAutoFocusItemId(firstItem.id);
+    }
+  }, [note.id, note.checklistItems, autoFocusItemId]);
 
   const canEdit = !readonly && (currentUser?.id === note.user.id || currentUser?.isAdmin);
 
@@ -501,6 +515,7 @@ export function Note({
                     onStopEdit={handleStopEditItem}
                     readonly={readonly}
                     showDeleteButton={canEdit}
+                    autoFocus={autoFocusItemId === item.id}
                   />
                 </DraggableItem>
               ))}
@@ -532,6 +547,7 @@ export function Note({
                 readonly={false}
                 showDeleteButton={false}
                 className="gap-3"
+                autoFocus={false}
               />
             )}
           </DraggableRoot>
